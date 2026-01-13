@@ -1,11 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid'; 
-import { FaRobot, FaCircle, FaArrowUp } from "react-icons/fa"; 
+import { FaCircle, FaArrowUp } from "react-icons/fa"; // Removed FaRobot
 
 import ChatBubble from "./components/ChatBubble";
 import VoiceRecorder from "./components/VoiceRecorder";
 import { sendTextMessage, sendVoiceMessage } from "./services/api";
 import "./styles/App.css"; 
+
+// IMPORT YOUR LOGO HERE
+// Make sure you have a folder "src/assets" and your file is named "logo.png"
+import myLogo from "./assets/logo.png"; 
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
@@ -35,6 +39,7 @@ function App() {
   };
 
   const handleKeyDown = (e) => {
+    // Submit on Enter (without Shift)
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleTextSubmit(e);
@@ -71,12 +76,47 @@ function App() {
   };
 
   const handleVoiceUpload = async (audioBlob) => {
-    addMessage("user", " [Voice Message]");
+    // 1. Generate ID for the temporary placeholder
+    const tempMessageId = uuidv4();
+
+    // 2. Add placeholder message
+    setMessages((prev) => [
+      ...prev,
+      { 
+        id: tempMessageId, 
+        sender: "user", 
+        text: "🎤 Processing audio...", 
+        audioUrl: null 
+      },
+    ]);
+
     setIsLoading(true);
+
     try {
       const data = await sendVoiceMessage(audioBlob);
+
+      // 3. UPDATE placeholder with real text from backend
+      setMessages((prev) => 
+        prev.map((msg) => 
+          msg.id === tempMessageId 
+            ? { ...msg, text: data.user_text } 
+            : msg
+        )
+      );
+
+      // 4. Add Bot Response
       addMessage("bot", data.bot_text, data.bot_audio);
+
     } catch (error) {
+      console.error(error);
+      // Handle error state
+      setMessages((prev) => 
+        prev.map((msg) => 
+          msg.id === tempMessageId 
+            ? { ...msg, text: "⚠️ Error processing audio" } 
+            : msg
+        )
+      );
       addMessage("bot", "Error processing voice.");
     } finally {
       setIsLoading(false);
@@ -89,7 +129,17 @@ function App() {
       <header className="chat-header">
         <div className="header-content">
             <div className="logo-box">
-                <FaRobot />
+                {/* REPLACED FaRobot WITH IMG */}
+                <img 
+                    src={myLogo} 
+                    alt="VoiceBot Logo" 
+                    style={{ 
+                        width: '40px', 
+                        height: '40px', 
+                        borderRadius: '50%', 
+                        objectFit: 'cover' 
+                    }} 
+                />
             </div>
             <div>
                 <h1>VoiceBot AI</h1>

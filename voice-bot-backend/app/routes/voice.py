@@ -72,7 +72,9 @@ async def voice_chat(file: UploadFile = File(...)):
         language=detected_language
     )
 
+    # ✅ ADD "user_text" HERE so the frontend receives it
     return {
+        "user_text": user_text,    # <--- This is the missing line!
         "bot_text": bot_reply_text,
         "bot_audio": audio_path,
         "language" : detected_language

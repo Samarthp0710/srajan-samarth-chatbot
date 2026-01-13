@@ -144,6 +144,11 @@ body {
   padding: 14px 22px;
   font-size: 1.05rem;
   line-height: 1.6;
+
+  /* --- ADD THESE LINES --- */
+  overflow-wrap: break-word;  /* Breaks long words if they overflow */
+  word-wrap: break-word;      /* Fallback for older browsers */
+  min-width: 0;               /* Prevents flex items from overflowing */
 }
 
 /* --- SEPARATED INPUT AREA --- */

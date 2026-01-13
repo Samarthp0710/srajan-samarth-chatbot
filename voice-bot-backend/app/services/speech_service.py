@@ -5,7 +5,7 @@ from functools import partial
 # 1. Load the model once (Global variable)
 # "base" is a good balance. If it's too slow, try "tiny".
 print("Loading Whisper model...")
-model = whisper.load_model("large")
+model = whisper.load_model("base")
 print("Whisper model loaded successfully!")
 
 # 2. Define the Async Function
