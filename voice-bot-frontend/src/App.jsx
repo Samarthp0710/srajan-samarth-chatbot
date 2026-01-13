@@ -1,21 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid'; 
+import { FaRobot, FaCircle, FaArrowUp } from "react-icons/fa"; 
 
-// React Icons
-import { FaPaperPlane, FaMicrophone, FaRobot, FaCircle, FaArrowUp } from "react-icons/fa"; 
-
-// Components
 import ChatBubble from "./components/ChatBubble";
 import VoiceRecorder from "./components/VoiceRecorder";
 import { sendTextMessage, sendVoiceMessage } from "./services/api";
-
-// Styles
 import "./styles/App.css"; 
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 function App() {
-  // --- LOGIC (UNCHANGED) ---
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -26,12 +20,26 @@ function App() {
   ]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  
   const chatEndRef = useRef(null);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const handleInput = (e) => {
+    const target = e.target;
+    setInputText(target.value);
+    target.style.height = 'auto';
+    target.style.height = `${Math.min(target.scrollHeight, 120)}px`;
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleTextSubmit(e);
+    }
+  };
 
   const addMessage = (sender, text, audioPath = null) => {
     const fullAudioUrl = audioPath ? `${BACKEND_URL}/${audioPath}` : null;
@@ -42,11 +50,13 @@ function App() {
   };
 
   const handleTextSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!inputText.trim()) return;
-
+    
     const text = inputText;
     setInputText(""); 
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
+
     addMessage("user", text);
     setIsLoading(true);
 
@@ -61,9 +71,8 @@ function App() {
   };
 
   const handleVoiceUpload = async (audioBlob) => {
-    addMessage("user", "🎤 (Sending Voice Note...)");
+    addMessage("user", " [Voice Message]");
     setIsLoading(true);
-
     try {
       const data = await sendVoiceMessage(audioBlob);
       addMessage("bot", data.bot_text, data.bot_audio);
@@ -74,87 +83,68 @@ function App() {
     }
   };
 
-  // --- NEW "ULTRA WIDE" UI ---
   return (
-    <div className="flex flex-col h-screen bg-white font-sans">
-      
-      {/* 1. HEADER (Full Width) */}
-      <header className="bg-indigo-600 text-white p-4 shadow-sm z-10 sticky top-0">
-        <div className="w-full px-6 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-                <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
-                    <FaRobot className="text-xl" />
-                </div>
-                <div>
-                    <h1 className="font-bold text-xl tracking-wide">VoiceBot AI</h1>
-                    <p className="text-xs text-indigo-200 flex items-center gap-1">
-                        <FaCircle className="text-[8px] text-green-400" /> Always Online
-                    </p>
-                </div>
+    <div className="app-container">
+      {/* HEADER */}
+      <header className="chat-header">
+        <div className="header-content">
+            <div className="logo-box">
+                <FaRobot />
+            </div>
+            <div>
+                <h1>VoiceBot AI</h1>
+                <p className="status"><FaCircle className="status-dot" /> Online</p>
             </div>
         </div>
       </header>
 
-      {/* 2. CHAT AREA (Fills 90% of screen) */}
-      <main className="flex-1 overflow-y-auto p-6 scroll-smooth relative bg-white">
-        {/* Changed max-w-3xl to max-w-[90%] or w-full */}
-        <div className="w-full max-w-[95%] mx-auto space-y-6 pb-40">
-            
-            {/* Map Messages */}
+      {/* CHAT AREA */}
+      <main className="chat-box">
+        <div className="messages-wrapper">
             {messages.map((msg) => (
                <ChatBubble key={msg.id} message={msg} />
             ))}
             
-            {/* Loading Indicator */}
             {isLoading && (
-                 <div className="flex justify-start animate-pulse">
-                    <div className="bg-gray-100 border border-gray-200 text-gray-500 px-6 py-4 rounded-2xl rounded-tl-none text-sm shadow-sm">
-                        Thinking...
-                    </div>
+                 <div className="message bot">
+                    <div className="avatar" style={{background: 'transparent'}}>🤖</div>
+                    <div className="message-content" style={{padding: '10px 20px'}}>Thinking...</div>
                  </div>
             )}
-            
             <div ref={chatEndRef} />
         </div>
       </main>
 
-      {/* 3. FLOATING INPUT BAR (Stretches with screen) */}
-      <div className="fixed bottom-0 left-0 w-full bg-gradient-to-t from-white via-white to-transparent pb-6 pt-10">
-        <div className="w-full max-w-[90%] mx-auto px-4">
-            <div className="bg-white border border-gray-300 rounded-full shadow-2xl flex items-center p-3 gap-3 transition-all hover:border-indigo-300 hover:shadow-indigo-500/20">
-                
-                {/* Voice Recorder */}
-                <div className="pl-2">
-                    <VoiceRecorder onRecordingComplete={handleVoiceUpload} />
-                </div>
-
-                {/* Text Input */}
-                <form onSubmit={handleTextSubmit} className="flex-1 flex items-center">
-                    <input
-                    type="text"
-                    className="flex-1 bg-transparent px-4 py-3 text-base focus:outline-none text-gray-700 placeholder-gray-400"
-                    placeholder="Message VoiceBot..."
+      {/* SEPARATED INPUT AREA */}
+      <div className="input-area">
+        
+        {/* AREA 1: The Text Capsule */}
+        <div className="gemini-capsule-border">
+            <div className="gemini-capsule-inner">
+                <textarea
+                    ref={textareaRef}
+                    placeholder="Ask VoiceBot..."
                     value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
+                    onChange={handleInput}
+                    onKeyDown={handleKeyDown}
                     disabled={isLoading}
-                    />
-                    
-                    {/* Send Button */}
-                    <button 
-                        type="submit" 
-                        disabled={!inputText.trim() || isLoading}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-transform transform hover:scale-105 active:scale-95 disabled:bg-gray-300 disabled:scale-100"
-                    >
-                    <FaArrowUp className="text-lg" />
-                    </button>
-                </form>
+                    rows={1}
+                />
             </div>
-            <p className="text-center text-xs text-gray-400 mt-3">
-                VoiceBot can make mistakes. Please verify important information.
-            </p>
         </div>
-      </div>
 
+        {/* AREA 2: The Separate Button */}
+        <div className="action-button-wrapper">
+            {inputText.trim() ? (
+                <button type="submit" className="action-btn send-btn" onClick={handleTextSubmit} disabled={isLoading}>
+                    <FaArrowUp /> 
+                </button>
+            ) : (
+                <VoiceRecorder onRecordingComplete={handleVoiceUpload} />
+            )}
+        </div>
+
+      </div>
     </div>
   );
 }

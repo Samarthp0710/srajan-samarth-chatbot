@@ -1,42 +1,253 @@
-#root {
-  max-width: 1280px;
+/* --- GLOBAL RESET --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: #0f0f15;
+  color: #ffffff;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* --- MAIN LAYOUT --- */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-image: radial-gradient(circle at 50% 0%, #13131f 0%, #0f0f15 100%);
+}
+
+/* --- HEADER --- */
+.chat-header {
+  padding: 12px 40px;
+  background: rgba(15, 15, 21, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 10;
+  width: 100%;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.logo-box {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.4);
+}
+
+.chat-header h1 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.status {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.status-dot {
+  color: #22c55e;
+  font-size: 8px;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+/* --- CHAT AREA --- */
+.chat-box {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.messages-wrapper {
+  width: 100%;
+  padding: 0 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 20px;
+}
+
+.message {
+  display: flex;
+  max-width: 70%;
+  width: fit-content;
+  align-items: flex-end;
+}
+
+.message.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+  margin-left: auto;
+}
+
+.message.user .message-content {
+  background: linear-gradient(135deg, #7c3aed, #9333ea);
+  color: white;
+  border-radius: 20px 20px 4px 20px;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.2);
+}
+
+.message.bot {
+  align-self: flex-start;
+  flex-direction: row;
+  margin-right: auto;
+}
+
+.message.bot .message-content {
+  background: rgba(30, 30, 38, 0.9);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px 20px 20px 4px;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin: 0 12px;
+}
+
+.message.bot .avatar { background: #2d2d3a; color: #fff; }
+.message.user .avatar { display: none; }
+
+.message-content {
+  padding: 14px 22px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* --- SEPARATED INPUT AREA --- */
+.input-area {
+  width: 100%;
+  padding: 20px 40px 30px 40px;
+  background: linear-gradient(to top, #0f0f15 80%, transparent);
+  z-index: 20;
+  
+  /* Flex Layout for Side-by-Side */
+  display: flex;
+  align-items: flex-end; /* Align bottom */
+  gap: 15px; /* Space between capsule and button */
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* 1. The Text Capsule (Expands) */
+.gemini-capsule-border {
+  flex: 1; /* Takes all available space */
+  border-radius: 30px;
+  padding: 2px;
+  background: linear-gradient(90deg, #4f46e5, #a855f7, #ec4899); 
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
+  transition: all 0.2s;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.gemini-capsule-inner {
+  width: 100%;
+  background: #1e1e24;
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  padding: 4px 20px; 
+  min-height: 55px; /* Comfortable height */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Text Area */
+.gemini-capsule-inner textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  padding: 14px 0;
+  outline: none;
+  resize: none;
+  max-height: 120px;
+  overflow-y: auto;
+  
+  /* Hide Scrollbar */
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+}
+.gemini-capsule-inner textarea::-webkit-scrollbar { display: none; }
+.gemini-capsule-inner textarea::placeholder { color: #64748b; }
+
+
+/* 2. The Separate Button Wrapper */
+.action-button-wrapper {
+  /* No margin needed, flex gap handles spacing */
+  padding-bottom: 5px; /* Align visually with capsule center */
 }
 
-.card {
-  padding: 2em;
+/* 3. BUTTONS (Big Icons Preserved) */
+.action-btn, .mic-btn {
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 50% !important;
+  border: none;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: #ffffff !important;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
-.read-the-docs {
-  color: #888;
+/* --- BIG ICONS --- */
+.action-btn svg, .mic-btn svg {
+  width: 28px !important;
+  height: 28px !important;
+  fill: #000000 !important;
+  display: block;
+  transform: scale(1.4); 
 }
+
+.mic-btn:hover, .action-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); /* Glow on hover */
+}
+
+.mic-btn.recording {
+  background-color: #ef4444 !important;
+}
+.mic-btn.recording svg {
+  fill: #ffffff !important;
+}
+
+/* Scrollbar */
+.chat-box::-webkit-scrollbar { width: 8px; }
+.chat-box::-webkit-scrollbar-thumb { background-color: #333; border-radius: 4px; }
+.chat-box::-webkit-scrollbar-track { background: transparent; }
