@@ -16,3 +16,7 @@ yarn-debug.log*
 
 __pycache__/
 venv/
+voice-bot-backend/bot_audio/
+voice-bot-backend/temp_audio/
+*.mp3
+*.wav
