@@ -18,7 +18,7 @@ function App() {
     {
       id: 1,
       sender: "bot",
-      text: "Hello! I am your AI assistant. Speak or type in any language!",
+      text: "Hello! I am Jarvis. Your digital sidekick 😉!",
       audioUrl: null,
     },
   ]);
@@ -85,7 +85,7 @@ function App() {
       { 
         id: tempMessageId, 
         sender: "user", 
-        text: "🎤 Processing audio...", 
+        text: "Processing audio...", 
         audioUrl: null 
       },
     ]);
@@ -142,8 +142,7 @@ function App() {
                 />
             </div>
             <div>
-                <h1>VoiceBot AI</h1>
-                <p className="status"><FaCircle className="status-dot" /> Online</p>
+                <h1>Jarvis</h1>
             </div>
         </div>
       </header>
@@ -173,7 +172,7 @@ function App() {
             <div className="gemini-capsule-inner">
                 <textarea
                     ref={textareaRef}
-                    placeholder="Ask VoiceBot..."
+                    placeholder="Ask Jarvis..."
                     value={inputText}
                     onChange={handleInput}
                     onKeyDown={handleKeyDown}
